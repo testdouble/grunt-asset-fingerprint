@@ -20,7 +20,8 @@ module.exports = (grunt) ->
       src = files.src[0]
       dest = files.dest
 
-      grunt.log.warn("Source file \"" + src + "\" not found.") unless grunt.file.exists(src)
+      return grunt.log.debug("Source file `#{src}` was a directory. Skipping.") if grunt.file.isDir(src)
+      grunt.log.warn("Source file `#{src}` not found.") unless grunt.file.exists(src)
 
       algorithmHash = crypto.createHash(algorithm)
       extension     = path.extname(dest)
