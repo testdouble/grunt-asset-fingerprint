@@ -10,9 +10,19 @@ module.exports = (grunt) ->
   stripDestPath = (file, files) ->
     file.replace(path.normalize("#{files.orig.dest}/"), "")
 
+  contentWithHashSubstitutions = (file, hashMap) ->
+    originalContent = grunt.file.read(file)
+    result = _(hashMap).reduce (memo, hashedName, originalName) ->
+      memo.replace(originalName, hashedName)
+    , originalContent
+    return result: result, madeAnyDifference: result != originalContent
+
+
   grunt.registerMultiTask "assetFingerprint", "Generates asset fingerprints and appends to a rails manifest", ->
-    manifestPath   = @options(manifestPath: "dist/assets.json").manifestPath
-    algorithm      = @options(algorithm: "md5").algorithm
+    manifestPath        = @options(manifestPath: "dist/assets.json").manifestPath
+    algorithm           = @options(algorithm: "md5").algorithm
+    findAndReplaceFiles = grunt.file.expand(@options(findAndReplaceFiles: []).findAndReplaceFiles)
+    keepOriginalFiles   = @options(keepOriginalFiles: true).keepOriginalFiles
 
     filesToHashed = {}
 
@@ -25,13 +35,35 @@ module.exports = (grunt) ->
 
       algorithmHash = crypto.createHash(algorithm)
       extension     = path.extname(dest)
+      content = grunt.file.read(src)
 
-      content  = grunt.file.read(src)
-      filename = "#{path.dirname(dest)}/#{path.basename(dest, extension)}-#{algorithmHash.update(content).digest("hex")}#{extension}"
-      filesToHashed[stripDestPath(dest, files)] = stripDestPath(filename, files)
+      if _(findAndReplaceFiles).contains(src)
+        findAndReplaceFiles = _(findAndReplaceFiles).without(src)
+        substitution = contentWithHashSubstitutions(src, filesToHashed)
+        if substitution.madeAnyDifference
+          content = substitution.result
+          grunt.file.write(src, content)
+          grunt.log.writeln("Applied fingerprinted paths to: #{src}")
 
-      grunt.file.write filename, content
-      grunt.log.writeln "File #{filename} created."
+      destWithHash = "#{path.dirname(dest)}/#{path.basename(dest, extension)}-#{algorithmHash.update(content).digest("hex")}#{extension}"
+      filesToHashed[stripDestPath(dest, files)] = stripDestPath(destWithHash, files)
 
-    fs.writeFileSync(manifestPath, JSON.stringify(filesToHashed))
+      if keepOriginalFiles
+        grunt.file.copy(src, destWithHash)
+        grunt.log.writeln("Copied: '#{src}' to '#{destWithHash}'")
+      else
+        fs.renameSync(src, destWithHash)
+        grunt.log.writeln("Moved: '#{src}' to '#{destWithHash}'")
+
+    _(findAndReplaceFiles).each (file) ->
+      return unless fs.existsSync(file)
+      substitution = contentWithHashSubstitutions(file, filesToHashed)
+
+      if substitution.madeAnyDifference
+        grunt.file.write(file, substitution.result)
+        grunt.log.writeln("Fingerprinted paths: #{file}")
+
+    fs.writeFileSync(manifestPath, JSON.stringify(filesToHashed, null, "  "))
     grunt.log.writeln "Recorded #{_(filesToHashed).size()} asset mapping(s) to #{manifestPath}"
+
+
