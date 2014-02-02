@@ -1,12 +1,11 @@
+"use strict"
+
 fs     = require "fs"
 path   = require "path"
 crypto = require "crypto"
-
-"use strict"
+_      = require "lodash"
 
 module.exports = (grunt) ->
-  _ = grunt.util._
-
   stripDestPath = (file, files) ->
     file.replace(path.normalize("#{files.orig.dest}/"), "")
 

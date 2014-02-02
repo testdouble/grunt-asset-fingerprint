@@ -8,3 +8,6 @@ module.exports = (grunt) ->
       e2e:
         minijasminenode:
           showColors: true
+  
+  grunt.registerTask "test", ["spec"]
+  grunt.registerTask "default", ["test"]
