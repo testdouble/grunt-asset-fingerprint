@@ -12,7 +12,9 @@ module.exports = (grunt) ->
   contentWithHashSubstitutions = (file, hashMap) ->
     originalContent = grunt.file.read(file)
     result = _(hashMap).reduce (memo, hashedName, originalName) ->
-      memo.replace(originalName, hashedName)
+      memo.replace ///
+        #{originalName}
+      ///g, hashedName
     , originalContent
     return result: result, madeAnyDifference: result != originalContent
 
