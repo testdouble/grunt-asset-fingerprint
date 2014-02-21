@@ -18,6 +18,8 @@ module.exports = (grunt) ->
     , originalContent
     return result: result, madeAnyDifference: result != originalContent
 
+  containsAFingerprint = (fileName) ->
+    fileName.match(/\-\w{32}\./)
 
   grunt.registerMultiTask "assetFingerprint", "Generates asset fingerprints and appends to a rails manifest", ->
     manifestPath        = @options(manifestPath: "dist/assets.json").manifestPath
@@ -30,6 +32,7 @@ module.exports = (grunt) ->
     _(@files).each (files) ->
       src = files.src[0]
       dest = files.dest
+      return if containsAFingerprint(src)
 
       return grunt.log.debug("Source file `#{src}` was a directory. Skipping.") if grunt.file.isDir(src)
       grunt.log.warn("Source file `#{src}` not found.") unless grunt.file.exists(src)
