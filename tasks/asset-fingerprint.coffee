@@ -9,12 +9,15 @@ module.exports = (grunt) ->
   stripDestPath = (file, files) ->
     file.replace(path.normalize("#{files.orig.dest}/"), "")
 
-  contentWithHashSubstitutions = (file, hashMap) ->
+  contentWithHashSubstitutions = (file, hashMap, cdnPrefixForRootPaths) ->
     originalContent = grunt.file.read(file)
     result = _(hashMap).reduce (memo, hashedName, originalName) ->
-      memo.replace ///
+      memo.replace(///
+        \/#{originalName}
+      ///g, "#{cdnPrefixForRootPaths}/#{hashedName}"
+      ).replace(///
         #{originalName}
-      ///g, hashedName
+      ///g, hashedName)
     , originalContent
     return result: result, madeAnyDifference: result != originalContent
 
@@ -22,10 +25,11 @@ module.exports = (grunt) ->
     fileName.match(/\-\w{32}\./)
 
   grunt.registerMultiTask "assetFingerprint", "Generates asset fingerprints and appends to a rails manifest", ->
-    manifestPath        = @options(manifestPath: "dist/assets.json").manifestPath
-    algorithm           = @options(algorithm: "md5").algorithm
-    findAndReplaceFiles = grunt.file.expand(@options(findAndReplaceFiles: []).findAndReplaceFiles)
-    keepOriginalFiles   = @options(keepOriginalFiles: true).keepOriginalFiles
+    manifestPath          = @options(manifestPath: "dist/assets.json").manifestPath
+    algorithm             = @options(algorithm: "md5").algorithm
+    findAndReplaceFiles   = grunt.file.expand(@options(findAndReplaceFiles: []).findAndReplaceFiles)
+    keepOriginalFiles     = @options(keepOriginalFiles: true).keepOriginalFiles
+    cdnPrefixForRootPaths = @options(cdnPrefixForRootPaths: "").cdnPrefixForRootPaths
 
     filesToHashed = {}
 
@@ -43,7 +47,7 @@ module.exports = (grunt) ->
 
       if _(findAndReplaceFiles).contains(src)
         findAndReplaceFiles = _(findAndReplaceFiles).without(src)
-        substitution = contentWithHashSubstitutions(src, filesToHashed)
+        substitution = contentWithHashSubstitutions(src, filesToHashed, cdnPrefixForRootPaths)
         if substitution.madeAnyDifference
           content = substitution.result
           grunt.file.write(src, content)
@@ -61,7 +65,7 @@ module.exports = (grunt) ->
 
     _(findAndReplaceFiles).each (file) ->
       return unless fs.existsSync(file)
-      substitution = contentWithHashSubstitutions(file, filesToHashed)
+      substitution = contentWithHashSubstitutions(file, filesToHashed, cdnPrefixForRootPaths)
 
       if substitution.madeAnyDifference
         grunt.file.write(file, substitution.result)
