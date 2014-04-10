@@ -7,7 +7,7 @@ _      = require "lodash"
 
 module.exports = (grunt) ->
   stripDestPath = (file, files) ->
-    file.replace(path.normalize("#{files.orig.dest}/"), "")
+    file.replace("#{files.orig.dest}/", "")
 
   contentWithHashSubstitutions = (file, hashMap, cdnPrefixForRootPaths) ->
     originalContent = grunt.file.read(file)
