@@ -1,7 +1,7 @@
 {
   "name": "grunt-asset-fingerprint",
   "description": "Generates asset fingerprints",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/testdouble/grunt-asset-fingerprint",
   "author": {
     "name": "Justin Searls",
