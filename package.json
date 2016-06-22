@@ -1,7 +1,8 @@
 {
   "name": "grunt-asset-fingerprint",
   "description": "Generates asset fingerprints",
-  "version": "0.2.1",
+  "license": "Apache-2.0",
+  "version": "0.2.2",
   "homepage": "https://github.com/testdouble/grunt-asset-fingerprint",
   "author": {
     "name": "Justin Searls",
@@ -27,11 +28,11 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-jasmine-bundle": "~0.1.4"
+    "grunt": "^1.0.1",
+    "grunt-jasmine-bundle": "^0.3.0"
   },
   "peerDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": "^1.0.1"
   },
   "keywords": [
     "gruntplugin",
@@ -41,6 +42,6 @@
     "manifest"
   ],
   "dependencies": {
-    "lodash": "~2.4.1"
+    "grunt": "^1.0.1"
   }
 }
