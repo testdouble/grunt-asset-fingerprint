@@ -41,10 +41,10 @@ describe "assetFingerprint", ->
     When (done) -> runGruntTask("assetFingerprint", @config, done)
     Then  -> read("#{expand('spec/tmp/dist/some-javascript-*.js')[0]}") == read("spec/fixtures/some-javascript.js")
     Then -> appearsOnce(
-      /'\.\/background-aad08505b19d2359d0456348710415fe\.png'/g
+      /'\.\/background-95ac97ead4f4543f3161da2bfdb5ec56\.png'/g
       read("#{expand('spec/tmp/dist/some-css-*.css')[0]}"))
     Then -> appearsOnce(
-      /'https:\/\/cdn\.domain\.com\/background-aad08505b19d2359d0456348710415fe\.png'/g
+      /'https:\/\/cdn\.domain\.com\/background-95ac97ead4f4543f3161da2bfdb5ec56\.png'/g
       read("#{expand('spec/tmp/dist/some-css-*.css')[0]}"))
 
 
@@ -53,5 +53,5 @@ describe "assetFingerprint", ->
     And -> @assets = JSON.parse(read("spec/tmp/dist/assets.json"))
     Then -> expect(@assets).toEqual
       "some-javascript.js": "some-javascript-848617e97516659d0d8c68d3e142b48f.js"
-      "background.png": "background-aad08505b19d2359d0456348710415fe.png"
-      "some-css.css": "some-css-37924696594bb27e49549150257cccb2.css"
+      "background.png": "background-95ac97ead4f4543f3161da2bfdb5ec56.png"
+      "some-css.css": "some-css-4046ce32976bb9cb70e20b3a6ad54ea0.css"
