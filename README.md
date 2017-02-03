@@ -15,7 +15,8 @@ assetFingerprint: {
     "findAndReplaceFiles": [
       "dist/**/*.{js,css,html,xml}"
     ],
-    "keepOriginalFiles": false
+    "keepOriginalFiles": false,
+    "cdnPrefixForRootPaths": "https://cdn.domain.com"
   },
   "dist": {
     "files": [
