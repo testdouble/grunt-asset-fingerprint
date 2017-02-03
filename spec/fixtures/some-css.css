@@ -1,0 +1,7 @@
+.background.relative {
+  background: url('./background.png');
+}
+
+.background.cdn {
+  background: url('/background.png')
+}
