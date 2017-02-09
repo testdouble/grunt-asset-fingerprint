@@ -13,8 +13,8 @@ module.exports = (grunt) ->
     originalContent = grunt.file.read(file)
     result = _(hashMap).reduce (memo, hashedName, originalName) ->
       memo.replace(///
-        \/#{originalName}
-      ///g, "#{cdnPrefixForRootPaths}/#{hashedName}"
+        (["']|[(=]\s*)\/#{originalName}
+      ///g, "$1#{cdnPrefixForRootPaths}/#{hashedName}"
       ).replace(///
         #{originalName}
       ///g, hashedName)
