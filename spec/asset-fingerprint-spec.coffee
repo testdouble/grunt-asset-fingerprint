@@ -27,9 +27,6 @@ describe "assetFingerprint", ->
       assetFingerprint:
         options:
           manifestPath: "tmp/dist/assets.json"
-          findAndReplaceFiles: ['fixtures/some-css.css']
-          cdnPrefixForRootPaths: 'https://cdn.domain.com'
-
         sut:
           expand: true
           cwd: "fixtures"
@@ -37,16 +34,35 @@ describe "assetFingerprint", ->
           dest: "tmp/dist"
 
   describe "writes contents of fingerprinted files properly", ->
-    appearsOnce = (needle, haystack) -> haystack.match(needle)?.length == 1
     When (done) -> runGruntTask("assetFingerprint", @config, done)
     Then  -> read("#{expand('spec/tmp/dist/some-javascript-*.js')[0]}") == read("spec/fixtures/some-javascript.js")
-    Then -> appearsOnce(
-      /'\.\/background-95ac97ead4f4543f3161da2bfdb5ec56\.png'/g
-      read("#{expand('spec/tmp/dist/some-css-*.css')[0]}"))
-    Then -> appearsOnce(
-      /'https:\/\/cdn\.domain\.com\/background-95ac97ead4f4543f3161da2bfdb5ec56\.png'/g
-      read("#{expand('spec/tmp/dist/some-css-*.css')[0]}"))
 
+  describe "finds and replaces references properly", ->
+    appearsOnce = (needle, haystack) -> haystack.match(needle)?.length == 1
+    Given ->
+      # Add another fingerprinting target to specifically fingerprint the
+      # background.png file and find and replace occurrences in the already
+      # fingerprinted tmp/dist/some-css-*.css file. Do this to avoid dirtying
+      # the fixtures directory.
+      @config.assetFingerprint.sut2 =
+        options:
+          findAndReplaceFiles: ["tmp/dist/*.css"]
+          cdnPrefixForRootPaths: "https://cdn.domain.com"
+        expand: true
+        cwd: "fixtures"
+        src: ["background.png"]
+        dest: "tmp/dist"
+    When (done) -> runGruntTask("assetFingerprint", @config, done)
+    Then ->
+      appearsOnce(
+        /'\.\/background-95ac97ead4f4543f3161da2bfdb5ec56\.png'/g,
+        read("#{expand('spec/tmp/dist/some-css-*.css')[0]}")
+      )
+    Then ->
+      appearsOnce(
+        /'https:\/\/cdn\.domain\.com\/background-95ac97ead4f4543f3161da2bfdb5ec56\.png'/g,
+        read("#{expand('spec/tmp/dist/some-css-*.css')[0]}")
+      )
 
   describe "JSON asset manifest", ->
     When (done) -> runGruntTask("assetFingerprint", @config, done)
@@ -54,4 +70,4 @@ describe "assetFingerprint", ->
     Then -> expect(@assets).toEqual
       "some-javascript.js": "some-javascript-848617e97516659d0d8c68d3e142b48f.js"
       "background.png": "background-95ac97ead4f4543f3161da2bfdb5ec56.png"
-      "some-css.css": "some-css-4046ce32976bb9cb70e20b3a6ad54ea0.css"
+      "some-css.css": "some-css-14df887bc4003c9f380dde8dd513408b.css"
