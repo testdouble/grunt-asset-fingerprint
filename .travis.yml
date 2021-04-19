@@ -7,4 +7,4 @@ script:
   - "grunt spec:e2e"
 
 before_script:
-  - npm install -g grunt-cli
+  - npm install -g grunt-cli@1.2.0
