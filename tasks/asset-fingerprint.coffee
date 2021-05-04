@@ -14,10 +14,10 @@ module.exports = (grunt) ->
     result = _(hashMap).reduce (memo, hashedName, originalName) ->
       memo.replace(///
         (["']|[(=]\s*)\/#{originalName}($|["')>\s])
-      ///g, "$1#{cdnPrefixForRootPaths}/#{hashedName}"
+      ///g, "$1#{cdnPrefixForRootPaths}/#{hashedName}$2"
       ).replace(///
         #{originalName}($|["')>\s])
-      ///g, hashedName)
+      ///g, "#{hashedName}$1")
     , originalContent
     return result: result, madeAnyDifference: result != originalContent
 
