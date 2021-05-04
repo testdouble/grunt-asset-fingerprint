@@ -13,10 +13,10 @@ module.exports = (grunt) ->
     originalContent = grunt.file.read(file)
     result = _(hashMap).reduce (memo, hashedName, originalName) ->
       memo.replace(///
-        (["']|[(=]\s*)\/#{originalName}
+        (["']|[(=]\s*)\/#{originalName}($|["')>\s])
       ///g, "$1#{cdnPrefixForRootPaths}/#{hashedName}"
       ).replace(///
-        #{originalName}
+        #{originalName}($|["')>\s])
       ///g, hashedName)
     , originalContent
     return result: result, madeAnyDifference: result != originalContent
