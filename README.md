@@ -1,6 +1,6 @@
 # grunt-asset-fingerprint
 
-[![Build Status](https://travis-ci.org/testdouble/grunt-asset-fingerprint.png?branch=master)](https://travis-ci.org/testdouble/grunt-asset-fingerprint)
+[![Build Status](https://travis-ci.org/testdouble/grunt-asset-fingerprint.png?branch=main)](https://travis-ci.org/testdouble/grunt-asset-fingerprint)
 
 ### Overview
 
