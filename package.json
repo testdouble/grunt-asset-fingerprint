@@ -27,11 +27,12 @@
     "test": "grunt test"
   },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-jasmine-bundle": "~0.1.4"
+    "coffeescript": "^2.5.1",
+    "grunt": "^1.4.0",
+    "grunt-jasmine-bundle": "~0.4.0"
   },
   "peerDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": "~1.4.0"
   },
   "keywords": [
     "gruntplugin",
@@ -41,6 +42,6 @@
     "manifest"
   ],
   "dependencies": {
-    "lodash": "~2.4.1"
+    "lodash": "~4.17.21"
   }
 }

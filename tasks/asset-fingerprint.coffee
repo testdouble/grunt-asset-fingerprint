@@ -33,7 +33,7 @@ module.exports = (grunt) ->
 
     filesToHashed = {}
 
-    _(@files).each (files) ->
+    _.each @files, (files) ->
       src = files.src[0]
       dest = files.dest
       return if containsAFingerprint(src)
@@ -45,8 +45,8 @@ module.exports = (grunt) ->
       extension     = path.extname(dest)
       content = grunt.file.read(src)
 
-      if _(findAndReplaceFiles).contains(src)
-        findAndReplaceFiles = _(findAndReplaceFiles).without(src)
+      if _.includes(findAndReplaceFiles, src)
+        findAndReplaceFiles = _.without(findAndReplaceFiles, src)
         substitution = contentWithHashSubstitutions(src, filesToHashed, cdnPrefixForRootPaths)
         if substitution.madeAnyDifference
           content = substitution.result
@@ -63,7 +63,8 @@ module.exports = (grunt) ->
         fs.renameSync(src, destWithHash)
         grunt.log.writeln("Moved: '#{src}' to '#{destWithHash}'")
 
-    _(findAndReplaceFiles).each (file) ->
+
+    _.each findAndReplaceFiles, (file) ->
       return unless fs.existsSync(file)
       substitution = contentWithHashSubstitutions(file, filesToHashed, cdnPrefixForRootPaths)
 
@@ -72,6 +73,7 @@ module.exports = (grunt) ->
         grunt.log.writeln("Fingerprinted paths: #{file}")
 
     fs.writeFileSync(manifestPath, JSON.stringify(filesToHashed, null, "  "))
-    grunt.log.writeln "Recorded #{_(filesToHashed).size()} asset mapping(s) to #{manifestPath}"
+
+    grunt.log.writeln "Recorded #{_.size(filesToHashed)} asset mapping(s) to #{manifestPath}"
 
 
